@@ -14,4 +14,4 @@ This includes the file containing the main function, so you'll want to compile i
     elm-make ChangeMe.elm --output=elm.js
 ```
 
-if you just want to check it out and you will replace `ChangeMe.elm` with whatever you decide to change it to, after you've done that. 
+if you just want to check it out, and you will replace `ChangeMe.elm` with whatever you decide to change it to, after you've done that. 
