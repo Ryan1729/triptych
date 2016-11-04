@@ -108,29 +108,21 @@ minusSpaceScaleString =
     toString -spaceScale
 
 
-spaceHeight =
-    spaceScale * 0.875
+halfSpaceScale =
+    spaceScale / 2
 
 
-spaceHeightString =
-    toString spaceHeight
+halfSpaceScaleString =
+    toString halfSpaceScale
 
 
-minusSpaceHeightString =
-    toString -spaceHeight
-
-
-spaceSquish =
-    -spaceScale / 16
-
-
-spaceSquishString =
-    toString spaceSquish
+minusHalfSpaceScaleString =
+    toString -halfSpaceScale
 
 
 spaceSuffix =
-    (" m 0 " ++ spaceHeightString)
-        ++ (" l " ++ spaceScaleString ++ " " ++ "0")
-        ++ (" l " ++ spaceSquishString ++ " " ++ minusSpaceHeightString)
-        ++ (" l " ++ toString (-(spaceScale + 2 * spaceSquish)) ++ " " ++ "0")
+    (" m 0 " ++ spaceScaleString)
+        ++ (" l " ++ spaceScaleString ++ " " ++ (toString (-spaceScale * 5 / 8)))
+        ++ (" l " ++ minusSpaceScaleString ++ " " ++ minusHalfSpaceScaleString)
+        ++ (" l " ++ minusSpaceScaleString ++ " " ++ halfSpaceScaleString)
         ++ "Z"
