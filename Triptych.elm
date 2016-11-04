@@ -1,4 +1,4 @@
-module ChangeMe exposing (..)
+module Triptych exposing (..)
 
 import Html.App exposing (program)
 import Model exposing (defaultState)
