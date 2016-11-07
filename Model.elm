@@ -39,6 +39,11 @@ isInRack =
     GenericDict.member
 
 
+removeFromRack : Piece -> Rack -> Rack
+removeFromRack =
+    GenericDict.remove
+
+
 type alias Board =
     { top : Floor
     , middle : Floor

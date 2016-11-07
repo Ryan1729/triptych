@@ -16,8 +16,11 @@ update msg model =
                 Just piece ->
                     let
                         newModel =
-                            --TODO remove from astash and reset selected
-                            { model | board = Model.place piece floorId spaceId model.board }
+                            { model
+                                | board = Model.place piece floorId spaceId model.board
+                                , rack = Model.removeFromRack piece model.rack
+                                , selected = Nothing
+                            }
                     in
                         if checkForAnyLines newModel then
                             ( { newModel | turnState = Win }, Cmd.none )
