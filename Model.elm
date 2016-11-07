@@ -193,6 +193,13 @@ pieceComparer (Piece s1 c1 p1) (Piece s2 c2 p2) =
             determeined
 
 
+checkPiecesMatch : Piece -> Piece -> Piece -> Bool
+checkPiecesMatch (Piece s1 c1 p1) (Piece s2 c2 p2) (Piece s3 c3 p3) =
+    (s1 == s2 && s2 == s3)
+        || (c1 == c2 && c2 == c3)
+        || (p1 == p2 && p2 == p3)
+
+
 type Shape
     = Circle
     | Triangle
