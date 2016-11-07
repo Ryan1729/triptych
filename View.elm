@@ -65,16 +65,30 @@ centerY =
 renderBoard : Maybe Piece -> Board -> Svg Msg
 renderBoard selected board =
     g []
-        [ space ( centerX, centerY ) Nothing
+        [ invertedSpace ( centerX - scpaceWidth / 2, centerY - spaceHeight * 5 / 9 ) Nothing
+        , space ( centerX - scpaceWidth, centerY ) Nothing
+        , space ( centerX, centerY - spaceHeight ) Nothing
+        , space ( centerX, centerY ) Nothing
+        , space ( centerX + scpaceWidth, centerY ) Nothing
+        , space ( centerX, centerY + spaceHeight ) Nothing
+        , invertedSpace ( centerX + scpaceWidth / 2, centerY + spaceHeight * 4 / 9 ) Nothing
         ]
 
 
-space : ( Float, Float ) -> Maybe Msg -> Svg Msg
-space ( x, y ) maybeMsg =
+invertedSpace =
+    customSpace invertedSpaceSuffix
+
+
+space =
+    customSpace spaceSuffix
+
+
+customSpace : String -> ( Float, Float ) -> Maybe Msg -> Svg Msg
+customSpace dSuffix ( x, y ) maybeMsg =
     let
         dString =
             ("M " ++ toString x ++ " " ++ toString y)
-                ++ spaceSuffix
+                ++ dSuffix
 
         msgAttributes =
             case maybeMsg of
@@ -120,9 +134,37 @@ minusHalfSpaceScaleString =
     toString -halfSpaceScale
 
 
+scpaceWidth =
+    spaceScale * 2
+
+
+longCornerHeight =
+    spaceScale * 5 / 8
+
+
+spaceHeight =
+    longCornerHeight + halfSpaceScale
+
+
+longCornerString =
+    toString longCornerHeight
+
+
+minusLongCornerString =
+    toString -longCornerHeight
+
+
 spaceSuffix =
     (" m 0 " ++ spaceScaleString)
-        ++ (" l " ++ spaceScaleString ++ " " ++ (toString (-spaceScale * 5 / 8)))
+        ++ (" l " ++ spaceScaleString ++ " " ++ minusLongCornerString)
         ++ (" l " ++ minusSpaceScaleString ++ " " ++ minusHalfSpaceScaleString)
         ++ (" l " ++ minusSpaceScaleString ++ " " ++ halfSpaceScaleString)
+        ++ "Z"
+
+
+invertedSpaceSuffix =
+    (" m 0 " ++ spaceScaleString)
+        ++ (" l " ++ spaceScaleString ++ " " ++ minusHalfSpaceScaleString)
+        ++ (" l " ++ minusSpaceScaleString ++ " " ++ minusLongCornerString)
+        ++ (" l " ++ minusSpaceScaleString ++ " " ++ longCornerString)
         ++ "Z"
