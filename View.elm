@@ -73,14 +73,6 @@ centerY =
     boardHeight / 2
 
 
-
--- <linearGradient id="Gradient2" x1="0" x2="1" y1="0" y2="1">
---         <stop offset="0%" stop-color="red"></stop>
---         <stop offset="100%" stop-color="red" stop-opacity="0"></stop>
---
---       </linearGradient>
-
-
 renderBoard : Maybe Piece -> Board -> Svg Msg
 renderBoard selected board =
     g []

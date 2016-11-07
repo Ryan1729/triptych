@@ -31,7 +31,26 @@ renderRack selected rack =
         , height rackHeightString
         , viewBox ("0 0 " ++ rackWidthString ++ " " ++ rackHeightString)
         ]
-        <| [ Svg.rect
+        <| [ Svg.defs []
+                [ Svg.linearGradient [ id "RedGradient", x1 "0", x2 "1", y1 "0", y2 "1" ]
+                    [ Svg.stop [ offset "12.5%", stopColor (colourToString Red) ] []
+                    , Svg.stop [ offset "87.5%", stopColor (colourToString Red), stopOpacity "0" ] []
+                    ]
+                , Svg.linearGradient [ id "GreenGradient", x1 "0", x2 "1", y1 "0", y2 "1" ]
+                    [ Svg.stop [ offset "12.5%", stopColor (colourToString Green) ] []
+                    , Svg.stop [ offset "87.5%", stopColor (colourToString Green), stopOpacity "0" ] []
+                    ]
+                , Svg.linearGradient [ id "BlueGradient", x1 "0", x2 "1", y1 "0", y2 "1" ]
+                    [ Svg.stop [ offset "12.5%", stopColor (colourToString Blue) ] []
+                    , Svg.stop [ offset "87.5%", stopColor (colourToString Blue), stopOpacity "0" ] []
+                    ]
+                ]
+             -- <linearGradient id="Gradient2" x1="0" x2="1" y1="0" y2="1">
+             --         <stop offset="0%" stop-color="red"></stop>
+             --         <stop offset="100%" stop-color="red" stop-opacity="0"></stop>
+             --
+             -- </linearGradient>
+           , Svg.rect
                 [ x "0"
                 , y "0"
                 , width rackWidthString
@@ -90,14 +109,30 @@ renderPieceInRack (( xPos, yPos ) as point) isSelected isPresent piece =
 
 renderPiece : ( Float, Float ) -> Piece -> Svg Msg
 renderPiece ( xPos, yPos ) (Piece shape colour pattern) =
-    rect
-        [ fill (colourToString colour)
-        , x (toString xPos)
-        , y (toString yPos)
-        , width (toString pieceWidth)
-        , height (toString pieceHeight)
-        ]
-        []
+    let
+        extraAtrributes =
+            case pattern of
+                Full ->
+                    [ fill (colourToString colour) ]
+
+                StrokeOnly ->
+                    [ fillOpacity "0.0"
+                    , stroke (colourToString colour)
+                    , strokeWidth "4"
+                    ]
+
+                Gradient ->
+                    [ fill (colourToGradientString colour) ]
+    in
+        rect
+            (extraAtrributes
+                ++ [ x (toString xPos)
+                   , y (toString yPos)
+                   , width (toString pieceWidth)
+                   , height (toString pieceHeight)
+                   ]
+            )
+            []
 
 
 colourToString colour =
@@ -112,13 +147,25 @@ colourToString colour =
             "#0074D9"
 
 
+colourToGradientString colour =
+    case colour of
+        Red ->
+            "url(#RedGradient)"
+
+        Green ->
+            "url(#GreenGradient)"
+
+        Blue ->
+            "url(#BlueGradient)"
+
+
 selectedIndicator ( xPos, yPos ) =
     rect
         [ fillOpacity "0.0"
-        , x (toString xPos)
-        , y (toString yPos)
-        , width (toString pieceWidth)
-        , height (toString pieceHeight)
+        , x (toString (xPos - 1.5))
+        , y (toString (yPos - 1.5))
+        , width (toString (pieceWidth + 3))
+        , height (toString (pieceHeight + 3))
         , stroke "#FFDC00"
         , strokeWidth "2"
         ]
