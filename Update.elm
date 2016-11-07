@@ -12,7 +12,12 @@ update msg model =
             ( Model.defaultState, Cmd.none )
 
         Place floorId spaceId ->
-            ( model, Cmd.none )
+            case model.selected of
+                Just piece ->
+                    ( { model | board = Model.place piece floorId spaceId model.board }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         Select piece ->
             ( { model | selected = Just piece }, Cmd.none )

@@ -115,7 +115,11 @@ space ( x, y ) floorId spaceId space =
                     )
 
                 OccupiedSpace piece ->
-                    ( [ stroke "black" ], renderPiece x y piece )
+                    ( [ stroke "black" ]
+                    , PieceView.renderPiece []
+                        ( x - PieceView.pieceWidth / 2, y + PieceView.pieceHeight / 2 )
+                        piece
+                    )
     in
         g []
             [ Svg.path
@@ -126,12 +130,8 @@ space ( x, y ) floorId spaceId space =
                        ]
                 )
                 []
+            , pieceSvg
             ]
-
-
-renderPiece : Float -> Float -> Piece -> Svg Msg
-renderPiece x y piece =
-    nullSvg
 
 
 nullSvg =

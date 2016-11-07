@@ -46,19 +46,20 @@ type alias Board =
 
 
 emptyBoard =
-    Board emptyFloor emptyFloor emptyFloor
+    -- Board emptyFloor emptyFloor emptyFloor
+    Board emptyFloor emptyFloor (Floor (OccupiedSpace (Piece Circle Red Gradient)) EmptySpace EmptySpace EmptySpace EmptySpace EmptySpace EmptySpace EmptySpace EmptySpace)
 
 
 type alias Floor =
-    { oneOne : Space
-    , oneTwo : Space
-    , oneZero : Space
-    , twoOne : Space
-    , twoTwo : Space
-    , twoZero : Space
+    { zeroZero : Space
     , zeroOne : Space
     , zeroTwo : Space
-    , zeroZero : Space
+    , oneZero : Space
+    , oneOne : Space
+    , oneTwo : Space
+    , twoZero : Space
+    , twoOne : Space
+    , twoTwo : Space
     }
 
 
@@ -95,6 +96,70 @@ type SpaceId
     | ZeroTwo
     | OneTwo
     | TwoTwo
+
+
+place : Piece -> FloorId -> SpaceId -> Board -> Board
+place piece floorId spaceId board =
+    let
+        newFloor =
+            setSpace spaceId (OccupiedSpace piece) (getFloor floorId board)
+    in
+        setFloor floorId newFloor board
+
+
+setFloor : FloorId -> Floor -> Board -> Board
+setFloor floorId newFloor board =
+    case floorId of
+        Top ->
+            { board | top = newFloor }
+
+        Middle ->
+            { board | middle = newFloor }
+
+        Bottom ->
+            { board | bottom = newFloor }
+
+
+getFloor floorId board =
+    case floorId of
+        Top ->
+            board.top
+
+        Middle ->
+            board.middle
+
+        Bottom ->
+            board.bottom
+
+
+setSpace spaceId space floor =
+    case spaceId of
+        ZeroZero ->
+            { floor | zeroZero = space }
+
+        OneZero ->
+            { floor | oneZero = space }
+
+        TwoZero ->
+            { floor | twoZero = space }
+
+        ZeroOne ->
+            { floor | zeroOne = space }
+
+        OneOne ->
+            { floor | oneOne = space }
+
+        TwoOne ->
+            { floor | twoOne = space }
+
+        ZeroTwo ->
+            { floor | zeroTwo = space }
+
+        OneTwo ->
+            { floor | oneTwo = space }
+
+        TwoTwo ->
+            { floor | twoTwo = space }
 
 
 type Piece
