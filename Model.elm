@@ -6,17 +6,18 @@ import Extras
 
 
 type alias Model =
-    { mdl : Material.Model, board : Board, selected : Maybe Piece, rack : Rack, outcome : Outcome }
+    { mdl : Material.Model, board : Board, selected : Maybe Piece, rack : Rack, turnState : TurnState }
 
 
 defaultState =
-    { mdl = Material.model, board = emptyBoard, selected = Nothing, rack = fullRack, outcome = TBD }
+    { mdl = Material.model, board = emptyBoard, selected = Nothing, rack = fullRack, turnState = SelectPiece }
 
 
-type Outcome
-    = TBD
-    | Win
+type TurnState
+    = Win
     | Loss
+    | SelectPiece
+    | PlayPiece
 
 
 type alias Rack =
@@ -46,8 +47,7 @@ type alias Board =
 
 
 emptyBoard =
-    -- Board emptyFloor emptyFloor emptyFloor
-    Board emptyFloor emptyFloor (Floor (OccupiedSpace (Piece Circle Red Gradient)) EmptySpace EmptySpace EmptySpace EmptySpace EmptySpace EmptySpace EmptySpace EmptySpace)
+    Board emptyFloor emptyFloor emptyFloor
 
 
 type alias Floor =

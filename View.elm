@@ -1,6 +1,6 @@
 module View exposing (view)
 
-import Model exposing (Model, Board, Piece(..), Floor, FloorId(..), Space(..), SpaceId(..), Rack)
+import Model exposing (Model, Board, Piece(..), Floor, FloorId(..), Space(..), SpaceId(..), Rack, TurnState(..))
 import Html exposing (Html, text)
 import Html.Attributes
 import Msg exposing (Msg(..))
@@ -28,9 +28,9 @@ view model =
                 [ PieceView.renderRack model.selected model.rack
                 ]
             , Grid.cell [ Grid.size All 6 ]
-                [ Html.div [ Html.Attributes.style [ ( "width", boardWidthString ++ "px" ), ( "display", "flex" ), ( "justify-content", "center" ), ( "font-size", (boardWidth / 16 |> toString) ++ "px" ) ] ]
-                    [ model.outcome
-                        |> outcomeToString
+                [ Html.div [ Html.Attributes.style [ ( "width", boardWidthString ++ "px" ), ( "display", "flex" ), ( "justify-content", "center" ), ( "font-size", (boardWidth / 32 |> toString) ++ "px" ) ] ]
+                    [ model.turnState
+                        |> turnStateToString
                         |> Html.text
                     ]
                 , svg
@@ -45,8 +45,19 @@ view model =
         ]
 
 
-outcomeToString outcome =
-    ""
+turnStateToString turnState =
+    case turnState of
+        SelectPiece ->
+            "Select a piece for the CPU player to play"
+
+        PlayPiece ->
+            "Play the piece the CPU has selected for you"
+
+        Win ->
+            "You won!"
+
+        Loss ->
+            "You lost!"
 
 
 boardWidth =

@@ -1,7 +1,7 @@
 module Update exposing (update)
 
 import Msg exposing (Msg(..))
-import Model exposing (Model)
+import Model exposing (Model, TurnState(..))
 import Material
 
 
@@ -14,13 +14,53 @@ update msg model =
         Place floorId spaceId ->
             case model.selected of
                 Just piece ->
-                    ( { model | board = Model.place piece floorId spaceId model.board }, Cmd.none )
+                    let
+                        newModel =
+                            --TODO remove from astash and reset selected
+                            { model | board = Model.place piece floorId spaceId model.board }
+                    in
+                        if checkForAnyLines newModel then
+                            ( { newModel | turnState = Win }, Cmd.none )
+                        else
+                            ( newModel, Cmd.none )
 
                 Nothing ->
                     ( model, Cmd.none )
 
         Select piece ->
-            ( { model | selected = Just piece }, Cmd.none )
+            ( cpuTurn { model | selected = Just piece }, Cmd.none )
 
         Mdl msg' ->
             Material.update msg' model
+
+
+cpuTurn : Model -> Model
+cpuTurn model =
+    let
+        newModel =
+            makeCpuMove model
+    in
+        if checkForAnyLines newModel then
+            { newModel | turnState = Loss }
+        else
+            newModel
+
+
+makeCpuMove model =
+    model
+
+
+checkForAnyLines : Model -> Bool
+checkForAnyLines model =
+    False
+
+
+
+-- andCheckLine : Stack -> Stack -> Stack -> SubOutcome -> SubOutcome
+-- andCheckLine stack1 stack2 stack3 outcome =
+--     case outcome of
+--         Undetermined ->
+--             checkLine stack1 stack2 stack3
+--
+--         predetermined ->
+--             predetermined
