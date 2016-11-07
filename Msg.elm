@@ -1,8 +1,10 @@
 module Msg exposing (..)
 
 import Material
+import Model exposing (..)
 
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | NoOp
+    | NewGame
+    | Place FloorId SpaceId

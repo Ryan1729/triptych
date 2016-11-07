@@ -1,6 +1,6 @@
 module View exposing (view)
 
-import Model exposing (Model, Board, Piece(..), Floor)
+import Model exposing (Model, Board, Piece(..), Floor, FloorId(..), Space(..), SpaceId(..))
 import Html exposing (Html, text)
 import Msg exposing (Msg(..))
 import Material.Button as Button
@@ -17,9 +17,9 @@ view model =
             model.mdl
             [ Button.raised
             , Button.ripple
-            , Button.onClick NoOp
+            , Button.onClick NewGame
             ]
-            [ text "test Button" ]
+            [ text "New Game" ]
         , svg
             [ width boardWidthString
             , height boardHeightString
@@ -65,39 +65,46 @@ centerY =
 renderBoard : Maybe Piece -> Board -> Svg Msg
 renderBoard selected board =
     g []
-        <| renderFloor ( centerX, centerY - 4 * spaceHeight ) board.top
-        ++ renderFloor ( centerX, centerY - 0.5 * spaceHeight ) board.middle
-        ++ renderFloor ( centerX, centerY + 3 * spaceHeight ) board.bottom
+        <| renderFloor ( centerX, centerY - 4 * spaceHeight ) Top board.top
+        ++ renderFloor ( centerX, centerY - 0.5 * spaceHeight ) Middle board.middle
+        ++ renderFloor ( centerX, centerY + 3 * spaceHeight ) Bottom board.bottom
 
 
-renderFloor : ( Float, Float ) -> Floor -> List (Svg Msg)
-renderFloor ( x, y ) floor =
-    [ space ( x - scpaceWidth / 2, y - spaceHeight / 2 ) Nothing
-    , space ( x + scpaceWidth / 2, y - spaceHeight / 2 ) Nothing
-    , space ( x - scpaceWidth, y ) Nothing
-    , space ( x, y - spaceHeight ) Nothing
-    , space ( x, y ) Nothing
-    , space ( x + scpaceWidth, y ) Nothing
-    , space ( x, y + spaceHeight ) Nothing
-    , space ( x - scpaceWidth / 2, y + spaceHeight / 2 ) Nothing
-    , space ( x + scpaceWidth / 2, y + spaceHeight / 2 ) Nothing
+renderFloor : ( Float, Float ) -> FloorId -> Floor -> List (Svg Msg)
+renderFloor ( x, y ) floorId floor =
+    [ space ( x, y - spaceHeight ) floorId ZeroZero floor.zeroZero
+    , space ( x + scpaceWidth / 2, y - spaceHeight / 2 ) floorId OneZero floor.oneZero
+    , space ( x + scpaceWidth, y ) floorId TwoZero floor.twoZero
+    , space ( x - scpaceWidth / 2, y - spaceHeight / 2 ) floorId ZeroOne floor.zeroOne
+    , space ( x, y ) floorId OneOne floor.oneOne
+    , space ( x + scpaceWidth / 2, y + spaceHeight / 2 ) floorId TwoOne floor.twoOne
+    , space ( x - scpaceWidth, y ) floorId ZeroTwo floor.zeroTwo
+    , space ( x - scpaceWidth / 2, y + spaceHeight / 2 ) floorId OneTwo floor.oneTwo
+    , space ( x, y + spaceHeight ) floorId TwoTwo floor.twoTwo
     ]
 
 
-space : ( Float, Float ) -> Maybe Msg -> Svg Msg
-space ( x, y ) maybeMsg =
+space : ( Float, Float ) -> FloorId -> SpaceId -> Space -> Svg Msg
+space ( x, y ) floorId spaceId space =
     let
         dString =
             ("M " ++ toString x ++ " " ++ toString y)
                 ++ spaceSuffix
 
-        msgAttributes =
-            case maybeMsg of
-                Just msg ->
-                    [ stroke "white", onClick msg ]
+        ( msgAttributes, pieceSvg ) =
+            case space of
+                EmptySpace ->
+                    ( [ stroke "white"
+                      , onClick
+                            (Place floorId
+                                spaceId
+                            )
+                      ]
+                    , nullSvg
+                    )
 
-                Nothing ->
-                    [ stroke "black" ]
+                OccupiedSpace piece ->
+                    ( [ stroke "black" ], renderPiece x y piece )
     in
         g []
             [ Svg.path
@@ -109,6 +116,15 @@ space ( x, y ) maybeMsg =
                 )
                 []
             ]
+
+
+renderPiece : Float -> Float -> Piece -> Svg Msg
+renderPiece x y piece =
+    nullSvg
+
+
+nullSvg =
+    Svg.polygon [] []
 
 
 spaceScale =

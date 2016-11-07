@@ -19,11 +19,55 @@ type alias Board =
 
 
 emptyBoard =
-    Board EmptyFloor EmptyFloor EmptyFloor
+    Board emptyFloor emptyFloor emptyFloor
 
 
-type Floor
-    = EmptyFloor
+type alias Floor =
+    { oneOne : Space
+    , oneTwo : Space
+    , oneZero : Space
+    , twoOne : Space
+    , twoTwo : Space
+    , twoZero : Space
+    , zeroOne : Space
+    , zeroTwo : Space
+    , zeroZero : Space
+    }
+
+
+emptyFloor =
+    Floor EmptySpace
+        EmptySpace
+        EmptySpace
+        EmptySpace
+        EmptySpace
+        EmptySpace
+        EmptySpace
+        EmptySpace
+        EmptySpace
+
+
+type FloorId
+    = Top
+    | Middle
+    | Bottom
+
+
+type Space
+    = EmptySpace
+    | OccupiedSpace Piece
+
+
+type SpaceId
+    = ZeroZero
+    | OneZero
+    | TwoZero
+    | ZeroOne
+    | OneOne
+    | TwoOne
+    | ZeroTwo
+    | OneTwo
+    | TwoTwo
 
 
 type Piece

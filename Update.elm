@@ -8,7 +8,10 @@ import Material
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
+        NewGame ->
+            ( Model.defaultState, Cmd.none )
+
+        Place floorId spaceId ->
             ( model, Cmd.none )
 
         Mdl msg' ->
