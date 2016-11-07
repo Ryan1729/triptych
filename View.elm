@@ -1,6 +1,6 @@
 module View exposing (view)
 
-import Model exposing (Model, Board, Piece(..))
+import Model exposing (Model, Board, Piece(..), Floor)
 import Html exposing (Html, text)
 import Msg exposing (Msg(..))
 import Material.Button as Button
@@ -65,16 +65,23 @@ centerY =
 renderBoard : Maybe Piece -> Board -> Svg Msg
 renderBoard selected board =
     g []
-        [ space ( centerX - scpaceWidth / 2, centerY - spaceHeight / 2 ) Nothing
-        , space ( centerX + scpaceWidth / 2, centerY - spaceHeight / 2 ) Nothing
-        , space ( centerX - scpaceWidth, centerY ) Nothing
-        , space ( centerX, centerY - spaceHeight ) Nothing
-        , space ( centerX, centerY ) Nothing
-        , space ( centerX + scpaceWidth, centerY ) Nothing
-        , space ( centerX, centerY + spaceHeight ) Nothing
-        , space ( centerX - scpaceWidth / 2, centerY + spaceHeight / 2 ) Nothing
-        , space ( centerX + scpaceWidth / 2, centerY + spaceHeight / 2 ) Nothing
-        ]
+        <| renderFloor ( centerX, centerY - 4 * spaceHeight ) board.top
+        ++ renderFloor ( centerX, centerY - 0.5 * spaceHeight ) board.middle
+        ++ renderFloor ( centerX, centerY + 3 * spaceHeight ) board.bottom
+
+
+renderFloor : ( Float, Float ) -> Floor -> List (Svg Msg)
+renderFloor ( x, y ) floor =
+    [ space ( x - scpaceWidth / 2, y - spaceHeight / 2 ) Nothing
+    , space ( x + scpaceWidth / 2, y - spaceHeight / 2 ) Nothing
+    , space ( x - scpaceWidth, y ) Nothing
+    , space ( x, y - spaceHeight ) Nothing
+    , space ( x, y ) Nothing
+    , space ( x + scpaceWidth, y ) Nothing
+    , space ( x, y + spaceHeight ) Nothing
+    , space ( x - scpaceWidth / 2, y + spaceHeight / 2 ) Nothing
+    , space ( x + scpaceWidth / 2, y + spaceHeight / 2 ) Nothing
+    ]
 
 
 space : ( Float, Float ) -> Maybe Msg -> Svg Msg
@@ -105,7 +112,7 @@ space ( x, y ) maybeMsg =
 
 
 spaceScale =
-    100
+    80
 
 
 spaceScaleString =

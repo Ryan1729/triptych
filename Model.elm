@@ -8,11 +8,22 @@ type alias Model =
 
 
 defaultState =
-    { mdl = Material.model, board = EmptyBoard, selected = Nothing }
+    { mdl = Material.model, board = emptyBoard, selected = Nothing }
 
 
-type Board
-    = EmptyBoard
+type alias Board =
+    { top : Floor
+    , middle : Floor
+    , bottom : Floor
+    }
+
+
+emptyBoard =
+    Board EmptyFloor EmptyFloor EmptyFloor
+
+
+type Floor
+    = EmptyFloor
 
 
 type Piece
