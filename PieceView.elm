@@ -1,44 +1,175 @@
 module PieceView exposing (..)
 
 import Html exposing (Html)
-import Svg exposing (Svg, svg, polygon, Attribute, ellipse, g)
+import Svg exposing (Svg, svg, rect, polygon, Attribute, ellipse, g)
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
 import Msg exposing (Msg(..))
-import Model exposing (Piece, Rack)
+import Model exposing (Piece(..), Rack, Shape(..), Colour(..), Pattern(..))
 
 
-stashWidth =
-    500
+rackWidth =
+    250
 
 
-stashHeight =
+rackHeight =
     600
 
 
-stashWidthString =
-    toString stashWidth
+rackWidthString =
+    toString rackWidth
 
 
-stashHeightString =
-    toString stashHeight
+rackHeightString =
+    toString rackHeight
 
 
 renderRack : Maybe Piece -> Rack -> Html Msg
 renderRack selected rack =
     svg
-        [ width stashWidthString
-        , height stashHeightString
-        , viewBox ("0 0 " ++ stashWidthString ++ " " ++ stashHeightString)
+        [ width rackWidthString
+        , height rackHeightString
+        , viewBox ("0 0 " ++ rackWidthString ++ " " ++ rackHeightString)
         ]
         <| [ Svg.rect
                 [ x "0"
                 , y "0"
-                , width stashWidthString
-                , height stashHeightString
+                , width rackWidthString
+                , height rackHeightString
                 , stroke "black"
                 , strokeWidth "2"
                 , fillOpacity "0"
                 ]
                 []
            ]
+        ++ renderPieces selected rack
+
+
+renderPieces : Maybe Piece -> Rack -> List (Svg Msg)
+renderPieces selected rack =
+    let
+        isSelected =
+            case selected of
+                Just selectedPiece ->
+                    (==) selectedPiece
+
+                Nothing ->
+                    always False
+    in
+        Model.piecePossibilities
+            |> List.indexedMap
+                (\index piece ->
+                    renderPieceInRack (indexToPosition index)
+                        (isSelected piece)
+                        (Model.isInRack piece rack)
+                        piece
+                )
+
+
+nullSvg =
+    Svg.text ""
+
+
+renderPieceInRack : ( Float, Float ) -> Bool -> Bool -> Piece -> Svg Msg
+renderPieceInRack (( xPos, yPos ) as point) isSelected isPresent piece =
+    if isPresent then
+        let
+            renderedPiece =
+                renderPiece point piece
+        in
+            if isSelected then
+                g []
+                    [ renderedPiece
+                    , selectedIndicator point
+                    ]
+            else
+                renderedPiece
+    else
+        nullSvg
+
+
+renderPiece : ( Float, Float ) -> Piece -> Svg Msg
+renderPiece ( xPos, yPos ) (Piece shape colour pattern) =
+    rect
+        [ fill (colourToString colour)
+        , x (toString xPos)
+        , y (toString yPos)
+        , width (toString pieceWidth)
+        , height (toString pieceHeight)
+        ]
+        []
+
+
+colourToString colour =
+    case colour of
+        Red ->
+            "#FF4136"
+
+        Green ->
+            "#2ECC40"
+
+        Blue ->
+            "#0074D9"
+
+
+selectedIndicator ( xPos, yPos ) =
+    rect
+        [ fillOpacity "0.0"
+        , x (toString xPos)
+        , y (toString yPos)
+        , width (toString pieceWidth)
+        , height (toString pieceHeight)
+        , stroke "#FFDC00"
+        , strokeWidth "2"
+        ]
+        []
+
+
+left : Float
+left =
+    pieceWidth - spacing
+
+
+center : Float
+center =
+    2 * pieceWidth
+
+
+right : Float
+right =
+    3 * pieceWidth + spacing
+
+
+spacing : Float
+spacing =
+    15
+
+
+pieceWidth : Float
+pieceWidth =
+    50
+
+
+pieceHeight : Float
+pieceHeight =
+    50
+
+
+indexToPosition : Int -> ( Float, Float )
+indexToPosition index =
+    let
+        x =
+            case index % 3 of
+                0 ->
+                    left
+
+                1 ->
+                    center
+
+                _ ->
+                    right
+
+        y =
+            toFloat (index // 3) * (pieceHeight + spacing) + spacing
+    in
+        ( x, y )

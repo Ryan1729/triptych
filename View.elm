@@ -143,7 +143,7 @@ renderPiece x y piece =
 
 
 nullSvg =
-    Svg.polygon [] []
+    Svg.text ""
 
 
 spaceScale =

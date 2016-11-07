@@ -10,7 +10,7 @@ type alias Model =
 
 
 defaultState =
-    { mdl = Material.model, board = emptyBoard, selected = Nothing, rack = fullRack, outcome = TBD }
+    { mdl = Material.model, board = emptyBoard, selected = Just (Piece Circle Red Full), rack = fullRack, outcome = TBD }
 
 
 type Outcome
@@ -31,6 +31,11 @@ fullRack =
     piecePossibilities
         |> List.map (\piece -> ( piece, () ))
         |> GenericDict.fromList pieceComparer
+
+
+isInRack : Piece -> Rack -> Bool
+isInRack =
+    GenericDict.member
 
 
 type alias Board =
