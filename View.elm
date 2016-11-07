@@ -65,30 +65,24 @@ centerY =
 renderBoard : Maybe Piece -> Board -> Svg Msg
 renderBoard selected board =
     g []
-        [ invertedSpace ( centerX - scpaceWidth / 2, centerY - spaceHeight * 5 / 9 ) Nothing
+        [ space ( centerX - scpaceWidth / 2, centerY - spaceHeight / 2 ) Nothing
+        , space ( centerX + scpaceWidth / 2, centerY - spaceHeight / 2 ) Nothing
         , space ( centerX - scpaceWidth, centerY ) Nothing
         , space ( centerX, centerY - spaceHeight ) Nothing
         , space ( centerX, centerY ) Nothing
         , space ( centerX + scpaceWidth, centerY ) Nothing
         , space ( centerX, centerY + spaceHeight ) Nothing
-        , invertedSpace ( centerX + scpaceWidth / 2, centerY + spaceHeight * 4 / 9 ) Nothing
+        , space ( centerX - scpaceWidth / 2, centerY + spaceHeight / 2 ) Nothing
+        , space ( centerX + scpaceWidth / 2, centerY + spaceHeight / 2 ) Nothing
         ]
 
 
-invertedSpace =
-    customSpace invertedSpaceSuffix
-
-
-space =
-    customSpace spaceSuffix
-
-
-customSpace : String -> ( Float, Float ) -> Maybe Msg -> Svg Msg
-customSpace dSuffix ( x, y ) maybeMsg =
+space : ( Float, Float ) -> Maybe Msg -> Svg Msg
+space ( x, y ) maybeMsg =
     let
         dString =
             ("M " ++ toString x ++ " " ++ toString y)
-                ++ dSuffix
+                ++ spaceSuffix
 
         msgAttributes =
             case maybeMsg of
@@ -138,33 +132,25 @@ scpaceWidth =
     spaceScale * 2
 
 
-longCornerHeight =
-    spaceScale * 5 / 8
+shortCornerHeight =
+    spaceScale * 3 / 8
 
 
 spaceHeight =
-    longCornerHeight + halfSpaceScale
+    shortCornerHeight * 2
 
 
-longCornerString =
-    toString longCornerHeight
+shortCornerString =
+    toString shortCornerHeight
 
 
-minusLongCornerString =
-    toString -longCornerHeight
+minusShortCornerString =
+    toString -shortCornerHeight
 
 
 spaceSuffix =
     (" m 0 " ++ spaceScaleString)
-        ++ (" l " ++ spaceScaleString ++ " " ++ minusLongCornerString)
-        ++ (" l " ++ minusSpaceScaleString ++ " " ++ minusHalfSpaceScaleString)
-        ++ (" l " ++ minusSpaceScaleString ++ " " ++ halfSpaceScaleString)
-        ++ "Z"
-
-
-invertedSpaceSuffix =
-    (" m 0 " ++ spaceScaleString)
-        ++ (" l " ++ spaceScaleString ++ " " ++ minusHalfSpaceScaleString)
-        ++ (" l " ++ minusSpaceScaleString ++ " " ++ minusLongCornerString)
-        ++ (" l " ++ minusSpaceScaleString ++ " " ++ longCornerString)
+        ++ (" l " ++ spaceScaleString ++ " " ++ minusShortCornerString)
+        ++ (" l " ++ minusSpaceScaleString ++ " " ++ minusShortCornerString)
+        ++ (" l " ++ minusSpaceScaleString ++ " " ++ shortCornerString)
         ++ "Z"
