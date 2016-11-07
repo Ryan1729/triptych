@@ -94,7 +94,7 @@ renderPieceInRack (( xPos, yPos ) as point) isSelected isPresent piece =
     if isPresent then
         let
             renderedPiece =
-                renderPiece point piece
+                renderPiece [ onClick (Select piece) ] point piece
         in
             if isSelected then
                 g []
@@ -107,10 +107,10 @@ renderPieceInRack (( xPos, yPos ) as point) isSelected isPresent piece =
         nullSvg
 
 
-renderPiece : ( Float, Float ) -> Piece -> Svg Msg
-renderPiece ( xPos, yPos ) (Piece shape colour pattern) =
+renderPiece : List (Svg.Attribute Msg) -> ( Float, Float ) -> Piece -> Svg Msg
+renderPiece extraAttributes ( xPos, yPos ) (Piece shape colour pattern) =
     let
-        extraAtrributes =
+        pieceAtrributes =
             case pattern of
                 Full ->
                     [ fill (colourToString colour) ]
@@ -125,7 +125,8 @@ renderPiece ( xPos, yPos ) (Piece shape colour pattern) =
                     [ fill (colourToGradientString colour) ]
     in
         rect
-            (extraAtrributes
+            (extraAttributes
+                ++ pieceAtrributes
                 ++ [ x (toString xPos)
                    , y (toString yPos)
                    , width (toString pieceWidth)

@@ -8,3 +8,4 @@ type Msg
     = Mdl (Material.Msg Msg)
     | NewGame
     | Place FloorId SpaceId
+    | Select Piece

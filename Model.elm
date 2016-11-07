@@ -10,7 +10,7 @@ type alias Model =
 
 
 defaultState =
-    { mdl = Material.model, board = emptyBoard, selected = Just (Piece Circle Red Full), rack = fullRack, outcome = TBD }
+    { mdl = Material.model, board = emptyBoard, selected = Nothing, rack = fullRack, outcome = TBD }
 
 
 type Outcome

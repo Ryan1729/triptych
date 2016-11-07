@@ -14,5 +14,8 @@ update msg model =
         Place floorId spaceId ->
             ( model, Cmd.none )
 
+        Select piece ->
+            ( { model | selected = Just piece }, Cmd.none )
+
         Mdl msg' ->
             Material.update msg' model
