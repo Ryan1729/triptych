@@ -1,14 +1,29 @@
 module Model exposing (..)
 
 import Material
+import GenericDict exposing (GenericDict)
 
 
 type alias Model =
-    { mdl : Material.Model, board : Board, selected : Maybe Piece }
+    { mdl : Material.Model, board : Board, selected : Maybe Piece, rack : Rack, outcome : Outcome }
 
 
 defaultState =
-    { mdl = Material.model, board = emptyBoard, selected = Nothing }
+    { mdl = Material.model, board = emptyBoard, selected = Nothing, rack = emptyRack, outcome = TBD }
+
+
+type Outcome
+    = TBD
+    | Win
+    | Loss
+
+
+type alias Rack =
+    GenericDict Piece ()
+
+
+emptyRack =
+    GenericDict.empty pieceComparer
 
 
 type alias Board =
@@ -72,6 +87,11 @@ type SpaceId
 
 type Piece
     = Piece Shape Colour Pattern
+
+
+pieceComparer : Piece -> Piece -> Order
+pieceComparer (Piece s1 c1 p1) (Piece s2 c2 p2) =
+    EQ
 
 
 type Shape

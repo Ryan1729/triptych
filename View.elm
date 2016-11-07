@@ -1,12 +1,15 @@
 module View exposing (view)
 
-import Model exposing (Model, Board, Piece(..), Floor, FloorId(..), Space(..), SpaceId(..))
+import Model exposing (Model, Board, Piece(..), Floor, FloorId(..), Space(..), SpaceId(..), Rack)
 import Html exposing (Html, text)
+import Html.Attributes
 import Msg exposing (Msg(..))
 import Material.Button as Button
+import Material.Grid as Grid exposing (Device(..))
 import Svg exposing (Svg, svg, polygon, Attribute, g)
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
+import PieceView
 
 
 view : Model -> Html Msg
@@ -20,14 +23,30 @@ view model =
             , Button.onClick NewGame
             ]
             [ text "New Game" ]
-        , svg
-            [ width boardWidthString
-            , height boardHeightString
-            , viewBox ("0 0 " ++ boardWidthString ++ " " ++ boardHeightString)
-            ]
-            [ renderBoard model.selected model.board
+        , Grid.grid []
+            [ Grid.cell [ Grid.size All 5 ]
+                [ PieceView.renderRack model.selected model.rack
+                ]
+            , Grid.cell [ Grid.size All 6 ]
+                [ Html.div [ Html.Attributes.style [ ( "width", boardWidthString ++ "px" ), ( "display", "flex" ), ( "justify-content", "center" ), ( "font-size", (boardWidth / 16 |> toString) ++ "px" ) ] ]
+                    [ model.outcome
+                        |> outcomeToString
+                        |> Html.text
+                    ]
+                , svg
+                    [ width boardWidthString
+                    , height boardHeightString
+                    , viewBox ("0 0 " ++ boardWidthString ++ " " ++ boardHeightString)
+                    ]
+                    [ renderBoard model.selected model.board
+                    ]
+                ]
             ]
         ]
+
+
+outcomeToString outcome =
+    ""
 
 
 boardWidth =
