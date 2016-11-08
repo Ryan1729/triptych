@@ -173,8 +173,16 @@ minusHalfSpaceScaleString =
     toString -halfSpaceScale
 
 
+
+{- this makes room for the stroke between spaces so they don't overlap -}
+
+
+strokeSpacing =
+    0.125
+
+
 scpaceWidth =
-    spaceScale * 2
+    spaceScale * (2 + strokeSpacing)
 
 
 shortCornerHeight =
@@ -182,7 +190,7 @@ shortCornerHeight =
 
 
 spaceHeight =
-    shortCornerHeight * 2
+    shortCornerHeight * (2 + strokeSpacing)
 
 
 shortCornerString =
