@@ -55,6 +55,31 @@ emptyBoard =
     Board emptyFloor emptyFloor emptyFloor
 
 
+setFloor : FloorId -> Floor -> Board -> Board
+setFloor floorId newFloor board =
+    case floorId of
+        Top ->
+            { board | top = newFloor }
+
+        Middle ->
+            { board | middle = newFloor }
+
+        Bottom ->
+            { board | bottom = newFloor }
+
+
+getFloor floorId board =
+    case floorId of
+        Top ->
+            board.top
+
+        Middle ->
+            board.middle
+
+        Bottom ->
+            board.bottom
+
+
 type alias Floor =
     { zeroZero : Space
     , zeroOne : Space
@@ -103,6 +128,19 @@ type SpaceId
     | TwoTwo
 
 
+spaceIdPossibilities =
+    [ ZeroZero
+    , OneZero
+    , TwoZero
+    , ZeroOne
+    , OneOne
+    , TwoOne
+    , ZeroTwo
+    , OneTwo
+    , TwoTwo
+    ]
+
+
 place : Piece -> FloorId -> SpaceId -> Board -> Board
 place piece floorId spaceId board =
     let
@@ -112,29 +150,34 @@ place piece floorId spaceId board =
         setFloor floorId newFloor board
 
 
-setFloor : FloorId -> Floor -> Board -> Board
-setFloor floorId newFloor board =
-    case floorId of
-        Top ->
-            { board | top = newFloor }
+getSpace spaceId floor =
+    case spaceId of
+        ZeroZero ->
+            floor.zeroZero
 
-        Middle ->
-            { board | middle = newFloor }
+        OneZero ->
+            floor.oneZero
 
-        Bottom ->
-            { board | bottom = newFloor }
+        TwoZero ->
+            floor.twoZero
 
+        ZeroOne ->
+            floor.zeroOne
 
-getFloor floorId board =
-    case floorId of
-        Top ->
-            board.top
+        OneOne ->
+            floor.oneOne
 
-        Middle ->
-            board.middle
+        TwoOne ->
+            floor.twoOne
 
-        Bottom ->
-            board.bottom
+        ZeroTwo ->
+            floor.zeroTwo
+
+        OneTwo ->
+            floor.oneTwo
+
+        TwoTwo ->
+            floor.twoTwo
 
 
 setSpace spaceId space floor =

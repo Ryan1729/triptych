@@ -47,7 +47,11 @@ cpuTurn model =
                 Just newBoard ->
                     let
                         newModel =
-                            { model | board = newBoard }
+                            { model
+                                | board = newBoard
+                                , rack = Model.removeFromRack piece model.rack
+                                , selected = Nothing
+                            }
                     in
                         if checkForAnyLines newModel.board then
                             { newModel | turnState = Loss }
@@ -79,7 +83,65 @@ applyMove board ( floorId, spaceId, piece ) =
 
 getMoves : Piece -> Board -> List ( FloorId, SpaceId, Piece )
 getMoves piece board =
-    []
+    let
+        topFloor =
+            Model.getFloor Top board
+
+        middleFloor =
+            Model.getFloor Middle board
+
+        bottomFloor =
+            Model.getFloor Bottom board
+
+        moveList =
+            (List.filterMap
+                (\spaceId ->
+                    case Model.getSpace spaceId topFloor of
+                        EmptySpace ->
+                            Just ( Top, spaceId, piece )
+
+                        _ ->
+                            Nothing
+                )
+                Model.spaceIdPossibilities
+            )
+                ++ (List.filterMap
+                        (\spaceId ->
+                            case Model.getSpace spaceId middleFloor of
+                                EmptySpace ->
+                                    Just ( Middle, spaceId, piece )
+
+                                _ ->
+                                    Nothing
+                        )
+                        Model.spaceIdPossibilities
+                   )
+                ++ (List.filterMap
+                        (\spaceId ->
+                            case Model.getSpace spaceId bottomFloor of
+                                EmptySpace ->
+                                    Just ( Bottom, spaceId, piece )
+
+                                _ ->
+                                    Nothing
+                        )
+                        Model.spaceIdPossibilities
+                   )
+    in
+        shuffle (Random.initialSeed 42) moveList
+
+
+shuffle : Seed -> List a -> List a
+shuffle seed list =
+    let
+        length =
+            List.length list
+
+        randomTags =
+            Random.step (Random.list length (Random.int 0 length)) seed
+                |> fst
+    in
+        List.map2 (,) randomTags list |> List.sortBy fst |> List.unzip |> snd
 
 
 winningMove : Board -> ( FloorId, SpaceId, Piece ) -> Bool
