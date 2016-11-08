@@ -27,16 +27,56 @@ update msg model =
                         if checkForAnyLines newModel.board then
                             ( { newModel | turnState = Win }, Cmd.none )
                         else
-                            ( newModel, Cmd.none )
+                            ( { newModel | turnState = SelectPiece }, Cmd.none )
 
                 Nothing ->
                     ( model, Cmd.none )
 
         Select piece ->
-            ( cpuTurn { model | selected = Just piece }, Cmd.none )
+            let
+                newModel =
+                    cpuTurn { model | selected = Just piece }
+            in
+                if newModel.turnState == SelectPiece then
+                    case cpuSelectPiece newModel of
+                        Just cpuSelectedPiece ->
+                            ( { newModel
+                                | turnState = PlayPiece
+                                , selected = Just cpuSelectedPiece
+                              }
+                            , Cmd.none
+                            )
+
+                        Nothing ->
+                            ( { newModel | turnState = Win }, Cmd.none )
+                else
+                    ( newModel, Cmd.none )
 
         Mdl msg' ->
             Material.update msg' model
+
+
+cpuSelectPiece : Model -> Maybe Piece
+cpuSelectPiece model =
+    let
+        remainingPieces =
+            Model.getRemainingPieces model.rack
+    in
+        Extras.find
+            (\piece ->
+                let
+                    moves =
+                        getMoves piece model.board
+                in
+                    case Extras.find (winningMove model.board) moves of
+                        Nothing ->
+                            True
+
+                        Just _ ->
+                            False
+            )
+            remainingPieces
+            |> Extras.orElseLazy (\() -> Random.step (Random.sample remainingPieces) (Random.initialSeed 42) |> fst)
 
 
 cpuTurn : Model -> Model

@@ -44,6 +44,11 @@ removeFromRack =
     GenericDict.remove
 
 
+getRemainingPieces : Rack -> List Piece
+getRemainingPieces =
+    GenericDict.keys
+
+
 type alias Board =
     { top : Floor
     , middle : Floor
