@@ -1,7 +1,7 @@
 module PieceView exposing (..)
 
 import Html exposing (Html)
-import Svg exposing (Svg, svg, rect, polygon, Attribute, ellipse, g)
+import Svg exposing (Svg, svg, rect, path, Attribute, ellipse, g)
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
 import Msg exposing (Msg(..))
@@ -124,16 +124,51 @@ renderPiece extraAttributes ( xPos, yPos ) (Piece shape colour pattern) =
                 Gradient ->
                     [ fill (colourToGradientString colour) ]
     in
-        rect
-            (extraAttributes
-                ++ pieceAtrributes
-                ++ [ x (toString xPos)
-                   , y (toString yPos)
-                   , width (toString pieceWidth)
-                   , height (toString pieceHeight)
-                   ]
-            )
-            []
+        case shape of
+            Square ->
+                rect
+                    (extraAttributes
+                        ++ pieceAtrributes
+                        ++ [ x (toString xPos)
+                           , y (toString yPos)
+                           , width pieceWidthString
+                           , height pieceHeightString
+                           ]
+                    )
+                    []
+
+            Circle ->
+                ellipse
+                    (extraAttributes
+                        ++ pieceAtrributes
+                        ++ [ cx (toString (xPos + halfPieceWidth))
+                           , cy (toString (yPos + halfPieceHeight))
+                           , rx halfPieceWidthString
+                           , ry halfPieceHeightString
+                           ]
+                    )
+                    []
+
+            Triangle ->
+                Svg.path
+                    (extraAttributes
+                        ++ pieceAtrributes
+                        ++ [ d
+                                ("M "
+                                    ++ toString (xPos + halfPieceWidth)
+                                    ++ " "
+                                    ++ toString yPos
+                                    ++ " l "
+                                    ++ (toString (-pieceWidth / 2))
+                                    ++ " "
+                                    ++ pieceHeightString
+                                    ++ " l "
+                                    ++ pieceWidthString
+                                    ++ " 0 Z"
+                                )
+                           ]
+                    )
+                    []
 
 
 colourToString colour =
@@ -198,9 +233,35 @@ pieceWidth =
     50
 
 
+pieceWidthString =
+    toString pieceWidth
+
+
 pieceHeight : Float
 pieceHeight =
     50
+
+
+pieceHeightString =
+    toString pieceHeight
+
+
+halfPieceWidth : Float
+halfPieceWidth =
+    pieceWidth / 2
+
+
+halfPieceWidthString =
+    toString halfPieceWidth
+
+
+halfPieceHeight : Float
+halfPieceHeight =
+    pieceHeight / 2
+
+
+halfPieceHeightString =
+    toString halfPieceHeight
 
 
 indexToPosition : Int -> ( Float, Float )
