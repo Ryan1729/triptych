@@ -66,15 +66,15 @@ makeCpuMove piece board =
         moves =
             getMoves piece board
     in
-        Extras.find (cpuWinningMove board) moves
+        Extras.find (winningMove board) moves
             |> Extras.orElseLazy (\() -> Extras.find (nonLosingMove board) moves)
             |> Extras.orElseLazy (\() -> Random.step (Random.sample moves) (Random.initialSeed 42) |> fst)
             |> Maybe.map (applyMove board)
 
 
 applyMove : Board -> ( FloorId, SpaceId, Piece ) -> Board
-applyMove board ( floorId, spaceId, Piece shape colour pattern ) =
-    board
+applyMove board ( floorId, spaceId, piece ) =
+    Model.place piece floorId spaceId board
 
 
 getMoves : Piece -> Board -> List ( FloorId, SpaceId, Piece )
@@ -82,14 +82,27 @@ getMoves piece board =
     []
 
 
-cpuWinningMove : Board -> ( FloorId, SpaceId, Piece ) -> Bool
-cpuWinningMove board ( floorId, spaceId, piece ) =
-    False
+winningMove : Board -> ( FloorId, SpaceId, Piece ) -> Bool
+winningMove board move =
+    applyMove board move
+        |> checkMultiFloorLines
 
 
 nonLosingMove : Board -> ( FloorId, SpaceId, Piece ) -> Bool
-nonLosingMove board ( floorId, spaceId, piece ) =
-    False
+nonLosingMove board (( floorId, spaceId, piece ) as move) =
+    let
+        potentialBoard =
+            applyMove board move
+
+        potentialFutureMoves =
+            getMoves piece potentialBoard
+    in
+        case Extras.find (winningMove potentialBoard) potentialFutureMoves of
+            Just _ ->
+                False
+
+            Nothing ->
+                True
 
 
 checkForAnyLines : Board -> Bool
