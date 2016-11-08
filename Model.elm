@@ -6,11 +6,21 @@ import Extras
 
 
 type alias Model =
-    { mdl : Material.Model, board : Board, selected : Maybe Piece, rack : Rack, turnState : TurnState }
+    { mdl : Material.Model
+    , board : Board
+    , selected : Maybe Piece
+    , rack : Rack
+    , turnState : TurnState
+    }
 
 
 defaultState =
-    { mdl = Material.model, board = emptyBoard, selected = Nothing, rack = fullRack, turnState = SelectPiece }
+    { mdl = Material.model
+    , board = emptyBoard
+    , selected = Nothing
+    , rack = fullRack
+    , turnState = SelectPiece
+    }
 
 
 type TurnState

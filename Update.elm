@@ -187,7 +187,7 @@ shuffle seed list =
 winningMove : Board -> ( FloorId, SpaceId, Piece ) -> Bool
 winningMove board move =
     applyMove board move
-        |> checkMultiFloorLines
+        |> checkForAnyLines
 
 
 nonLosingMove : Board -> ( FloorId, SpaceId, Piece ) -> Bool
