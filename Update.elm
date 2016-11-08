@@ -61,6 +61,7 @@ cpuSelectPiece model =
     let
         remainingPieces =
             Model.getRemainingPieces model.rack
+                |> shuffle (Random.initialSeed 42)
     in
         Extras.find
             (\piece ->
