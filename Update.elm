@@ -3,6 +3,8 @@ module Update exposing (update)
 import Msg exposing (Msg(..))
 import Model exposing (..)
 import Material
+import Extras
+import Random.Pcg as Random exposing (Seed)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -22,7 +24,7 @@ update msg model =
                                 , selected = Nothing
                             }
                     in
-                        if checkForAnyLines newModel then
+                        if checkForAnyLines newModel.board then
                             ( { newModel | turnState = Win }, Cmd.none )
                         else
                             ( newModel, Cmd.none )
@@ -39,26 +41,63 @@ update msg model =
 
 cpuTurn : Model -> Model
 cpuTurn model =
+    case model.selected of
+        Just piece ->
+            case makeCpuMove piece model.board of
+                Just newBoard ->
+                    let
+                        newModel =
+                            { model | board = newBoard }
+                    in
+                        if checkForAnyLines newModel.board then
+                            { newModel | turnState = Loss }
+                        else
+                            newModel
+
+                Nothing ->
+                    model
+
+        Nothing ->
+            model
+
+
+makeCpuMove piece board =
     let
-        newModel =
-            makeCpuMove model
+        moves =
+            getMoves piece board
     in
-        if checkForAnyLines newModel then
-            { newModel | turnState = Loss }
-        else
-            newModel
+        Extras.find (cpuWinningMove board) moves
+            |> Extras.orElseLazy (\() -> Extras.find (nonLosingMove board) moves)
+            |> Extras.orElseLazy (\() -> Random.step (Random.sample moves) (Random.initialSeed 42) |> fst)
+            |> Maybe.map (applyMove board)
 
 
-makeCpuMove model =
-    model
+applyMove : Board -> ( FloorId, SpaceId, Piece ) -> Board
+applyMove board ( floorId, spaceId, Piece shape colour pattern ) =
+    board
 
 
-checkForAnyLines : Model -> Bool
-checkForAnyLines model =
-    checkMultiFloorLines model.board
-        |> andCheckFloor Top model.board
-        |> andCheckFloor Middle model.board
-        |> andCheckFloor Bottom model.board
+getMoves : Piece -> Board -> List ( FloorId, SpaceId, Piece )
+getMoves piece board =
+    []
+
+
+cpuWinningMove : Board -> ( FloorId, SpaceId, Piece ) -> Bool
+cpuWinningMove board ( floorId, spaceId, piece ) =
+    False
+
+
+nonLosingMove : Board -> ( FloorId, SpaceId, Piece ) -> Bool
+nonLosingMove board ( floorId, spaceId, piece ) =
+    False
+
+
+checkForAnyLines : Board -> Bool
+checkForAnyLines board =
+    checkMultiFloorLines board
+        |> andCheckFloor Top board
+        |> andCheckFloor Middle board
+        |> andCheckFloor Bottom board
 
 
 checkMultiFloorLines : Board -> Bool
