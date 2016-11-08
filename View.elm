@@ -25,7 +25,7 @@ view model =
             [ text "New Game" ]
         , Grid.grid []
             [ Grid.cell [ Grid.size All 5 ]
-                [ PieceView.renderRack model.selected model.rack
+                [ PieceView.renderRack model.turnState model.selected model.rack
                 ]
             , Grid.cell [ Grid.size All 6 ]
                 [ Html.div [ Html.Attributes.style [ ( "width", boardWidthString ++ "px" ), ( "display", "flex" ), ( "justify-content", "center" ), ( "font-size", (boardWidth / 32 |> toString) ++ "px" ) ] ]

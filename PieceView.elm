@@ -5,7 +5,7 @@ import Svg exposing (Svg, svg, rect, path, Attribute, ellipse, g)
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
 import Msg exposing (Msg(..))
-import Model exposing (Piece(..), Rack, Shape(..), Colour(..), Pattern(..))
+import Model exposing (Piece(..), Rack, Shape(..), Colour(..), Pattern(..), TurnState(..))
 
 
 rackWidth =
@@ -24,8 +24,8 @@ rackHeightString =
     toString rackHeight
 
 
-renderRack : Maybe Piece -> Rack -> Html Msg
-renderRack selected rack =
+renderRack : TurnState -> Maybe Piece -> Rack -> Html Msg
+renderRack turnState selected rack =
     svg
         [ width rackWidthString
         , height rackHeightString
@@ -45,11 +45,6 @@ renderRack selected rack =
                     , Svg.stop [ offset "87.5%", stopColor (colourToString Blue), stopOpacity "0" ] []
                     ]
                 ]
-             -- <linearGradient id="Gradient2" x1="0" x2="1" y1="0" y2="1">
-             --         <stop offset="0%" stop-color="red"></stop>
-             --         <stop offset="100%" stop-color="red" stop-opacity="0"></stop>
-             --
-             -- </linearGradient>
            , Svg.rect
                 [ x "0"
                 , y "0"
@@ -61,11 +56,11 @@ renderRack selected rack =
                 ]
                 []
            ]
-        ++ renderPieces selected rack
+        ++ renderPieces turnState selected rack
 
 
-renderPieces : Maybe Piece -> Rack -> List (Svg Msg)
-renderPieces selected rack =
+renderPieces : TurnState -> Maybe Piece -> Rack -> List (Svg Msg)
+renderPieces turnState selected rack =
     let
         isSelected =
             case selected of
@@ -78,7 +73,8 @@ renderPieces selected rack =
         Model.piecePossibilities
             |> List.indexedMap
                 (\index piece ->
-                    renderPieceInRack (indexToPosition index)
+                    renderPieceInRack turnState
+                        (indexToPosition index)
                         (isSelected piece)
                         (Model.isInRack piece rack)
                         piece
@@ -89,12 +85,18 @@ nullSvg =
     Svg.text ""
 
 
-renderPieceInRack : ( Float, Float ) -> Bool -> Bool -> Piece -> Svg Msg
-renderPieceInRack (( xPos, yPos ) as point) isSelected isPresent piece =
+renderPieceInRack : TurnState -> ( Float, Float ) -> Bool -> Bool -> Piece -> Svg Msg
+renderPieceInRack turnState (( xPos, yPos ) as point) isSelected isPresent piece =
     if isPresent then
         let
+            extraAttributes =
+                if turnState == SelectPiece then
+                    [ onClick (Select piece) ]
+                else
+                    []
+
             renderedPiece =
-                renderPiece [ onClick (Select piece) ] point piece
+                renderPiece extraAttributes point piece
         in
             if isSelected then
                 g []
